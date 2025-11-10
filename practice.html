@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>練習問題 (30問) - IPアドレス学習</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f4f7f6;
+        }
+        .question-block {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 2px solid transparent;
+        }
+        .question-text {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .question-text .fill-in-blank {
+            font-weight: 700;
+            color: #ef4444; /* red-500 */
+            background-color: #fee2e2; /* red-100 */
+            padding: 0.1rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+        .option {
+            display: block;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb; /* gray-200 */
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .toggle-button {
+            background-color: #3b82f6; /* blue-500 */
+            color: white;
+            font-weight: 700;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .toggle-button:hover {
+            background-color: #2563eb; /* blue-600 */
+        }
+        .answer-block {
+            background-color: #f9fafb; /* gray-50 */
+            border-left: 4px solid #3b82f6; /* blue-500 */
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.25rem;
+        }
+        .answer-block.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div class="max-w-3xl mx-auto p-6 md:p-10">
+
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">練習問題 (30問)</h1>
+            <p class="text-lg text-gray-600">各問題の「解答・解説を表示」ボタンで答えを確認できます。</p>
+        </header>
+
+        <main id="quiz-container">
+            <!-- 問題はJSによってここに挿入されます -->
+        </main>
+
+        <footer class="mt-10 text-center">
+            <a href="index.html" class="text-blue-600 hover:underline font-medium">&larr; トップページに戻る</a>
+        </footer>
+
+    </div>
+
+    <script>
+        // 練習問題データ (JSONから)
+        const quizData = [
+            {
+                "id": "p01", "type": "multiple_choice", "question": "IPv4アドレスのクラスAで、ネットワークアドレス部として使用されるビット数はどれか？",
+                "options": [{ "text": "8ビット" }, { "text": "16ビット" }, { "text": "24ビット" }, { "text": "32ビット" }], "answer": "8ビット", "topic": "IPv4クラス"
+            },
+            {
+                "id": "p02", "type": "fill_in_the_blank", "question": "IPv4アドレスは、合計 [ ] ビットで構成されている。",
+                "keywords": ["32", "32ビット"], "topic": "IPv4"
+            },
+            {
+                "id": "p03", "type": "multiple_choice", "question": "IPアドレスのクラスCに関する記述として、適当なものはどれか？",
+                "options": [{ "text": "ホストアドレス部が16ビットである。" }, { "text": "IPアドレスの先頭ビットが「10」で始まる。" }, { "text": "大規模ネットワーク向けである。" }, { "text": "最大254台のホストを接続できる。" }], "answer": "最大254台のホストを接続できる。", "topic": "IPv4クラスC"
+            },
+            {
+                "id": "p04", "type": "multiple_choice", "question": "マルチキャスト通信に使用されるIPv4アドレスのクラスはどれか？",
+                "options": [{ "text": "クラスA" }, { "text": "クラスB" }, { "text": "クラスC" }, { "text": "クラスD" }], "answer": "クラスD", "topic": "IPv4クラス"
+            },
+            {
+                "id": "p05", "type": "fill_in_the_blank", "question": "1つのコンピュータから別の1つのコンピュータへ直接メッセージを送る1対1の通信方式を [ ] キャストという。",
+                "keywords": ["ユニ", "ユニキャスト", "unicast"], "topic": "ユニキャストとマルチキャスト"
+            },
+            {
+                "id": "p06", "type": "multiple_choice", "question": "IPv6アドレスのビット数はどれか？",
+                "options": [{ "text": "32ビット" }, { "text": "64ビット" }, { "text": "128ビット" }, { "text": "256ビット" }], "answer": "128ビット", "topic": "IPv6"
+            },
+            {
+                "id": "p07", "type": "multiple_choice", "question": "IPv6ヘッダの長さに関する記述として、正しいものはどれか？",
+                "options": [{ "text": "20バイトの固定長である。" }, { "text": "40バイトの固定長である。" }, { "text": "データに応じた可変長である。" }, { "text": "IPv4ヘッダと同じ長さである。" }], "answer": "40バイトの固定長である。", "topic": "IPv6ヘッダ"
+            },
+            {
+                "id": "p08", "type": "fill_in_the_blank", "question": "IPアドレスをネットワークアドレス部とホストアドレス部に分けるために使用される値を [ ] マスクという。",
+                "keywords": ["サブネット", "サブネットマスク", "subnet mask"], "topic": "サブネットマスク"
+            },
+            {
+                "id": "p09", "type": "multiple_choice", "question": "サブネットマスク「255.255.255.0」をCIDR表記（簡略表記）した場合、正しいものはどれか？",
+                "options": [{ "text": "/8" }, { "text": "/16" }, { "text": "/24" }, { "text": "/32" }], "answer": "/24", "topic": "サブネットマスク"
+            },
+            {
+                "id": "p10", "type": "fill_in_the_blank", "question": "IPv6アドレスの表記法を統一するガイドラインとして発行されたRFCの番号は [ ] である。",
+                "keywords": ["5952", "RFC5952", "RFC 5952"], "topic": "IPv6表記 (RFC 5952)"
+            },
+            {
+                "id": "p11", "type": "multiple_choice", "question": "IPv4アドレスのクラスBの先頭ビット列はどれか？",
+                "options": [{ "text": "0" }, { "text": "10" }, { "text": "110" }, { "text": "1110" }], "answer": "10", "topic": "IPv4クラス"
+            },
+            {
+                "id": "p12", "type": "multiple_choice", "question": "IPアドレス「172.16.0.1」が属する可能性が最も高いクラスはどれか？ (先頭ビットの範囲に基づく)",
+                "options": [{ "text": "クラスA (0-127)" }, { "text": "クラスB (128-191)" }, { "text": "クラスC (192-223)" }, { "text": "クラスD (224-239)" }], "answer": "クラスB (128-191)", "topic": "IPv4クラス"
+            },
+            {
+                "id": "p13", "type": "fill_in_the_blank", "question": "ネットワークに接続される機器に割り当てられる、世界で一つだけの物理的な識別番号を [ ] アドレスという。",
+                "keywords": ["MAC", "MACアドレス", "mac address", "マックアドレス"], "topic": "MACアドレス"
+            },
+            {
+                "id": "p14", "type": "multiple_choice", "question": "IPv6で利用可能な高速な接続方式で、ユーザー認証が自動化されることが多い方式はどれか？",
+                "options": [{ "text": "PPPoE方式" }, { "text": "IPoE方式" }, { "text": "Dial-up方式" }, { "text": "Token Ring方式" }], "answer": "IPoE方式", "topic": "IPv6 (IPoE)"
+            },
+            {
+                "id": "p15", "type": "multiple_choice", "question": "IPv4とIPv6の互換性に関する記述として、正しいものはどれか？",
+                "options": [{ "text": "完全な互換性があり、直接通信できる。" }, { "text": "互換性はないが、「IPv4 over IPv6」のような技術で共存できる。" }, { "text": "IPv6のみがIPv4を理解できる。" }, { "text": "IPv4アドレスはIPv6アドレスの一部として利用される。" }], "answer": "互換性はないが、「IPv4 over IPv6」のような技術で共存できる。", "topic": "IPv4/IPv6互換性"
+            },
+            {
+                "id": "p16", "type": "fill_in_the_blank", "question": "RFC 5952のルールにおいて、IPv6アドレス「...:0000:0000:...」のように「0」のフィールドが連続する場合、[ ] を使って省略できる。",
+                "keywords": ["::", "コロンコロン", "ダブルコロン"], "topic": "IPv6表記 (RFC 5952)"
+            },
+            {
+                "id": "p17", "type": "multiple_choice", "question": "IPv6アドレス「2001:db8:0:0:1:0:0:1」をRFC 5952に従って正しく省略したものはどれか？",
+                "options": [{ "text": "2001:db8::1:0:0:1" }, { "text": "2001:db8:0:0:1::1" }, { "text": "2001:db8::1::1" }, { "text": "2001:db8::1:0:0:1 と 2001:db8:0:0:1::1 の両方が正しい" }], "answer": "2001:db8::1:0:0:1", "topic": "IPv6表記 (RFC 5952)"
+            },
+            {
+                "id": "p18", "type": "multiple_choice", "question": "IPアドレス「192.168.10.150」とサブネットマスク「255.255.255.192」がある。この端末のホストアドレス部（ビット）は何ビットか？",
+                "options": [{ "text": "2ビット" }, { "text": "4ビット" }, { "text": "6ビット" }, { "text": "8ビット" }], "answer": "6ビット", "topic": "サブネットマスク"
+            },
+            {
+                "id": "p19", "type": "fill_in_the_blank", "question": "サブネットマスク「255.255.255.192」を2進数で表現した場合、第4オクテットは [ ] となる。",
+                "keywords": ["11000000"], "topic": "サブネットマスク"
+            },
+            {
+                "id": "p20", "type": "multiple_choice", "question": "IPアドレス「10.0.0.1」とサブネットマスク「255.0.0.0」がある。このネットワークのネットワークアドレスはどれか？",
+                "options": [{ "text": "10.0.0.0" }, { "text": "10.0.0.1" }, { "text": "255.0.0.0" }, { "text": "0.0.0.1" }], "answer": "10.0.0.0", "topic": "サブネットマスク"
+            },
+            {
+                "id": "p21", "type": "multiple_choice", "question": "IPv4アドレスのクラスCで、ネットワークアドレス部として使用されるビット数はどれか？",
+                "options": [{ "text": "8ビット" }, { "text": "16ビット" }, { "text": "24ビット" }, { "text": "32ビット" }], "answer": "24ビット", "topic": "IPv4クラス"
+            },
+            {
+                "id": "p22", "type": "fill_in_the_blank", "question": "IPv4アドレスのクラスAのIPアドレスは、先頭ビットが [ ] で始まる。",
+                "keywords": ["0", "ゼロ"], "topic": "IPv4クラス"
+            },
+            {
+                "id": "p23", "type": "multiple_choice", "question": "IPv6アドレス「fe80:0000:0000:0000:0204:61ff:fe9d:f156」をRFC 5952に従って正しく省略したものはどれか？",
+                "options": [{ "text": "fe80::204:61ff:fe9d:f156" }, { "text": "fe80:0:0:0:204:61ff:fe9d:f156" }, { "text": "fe80::0204:61ff:fe9d:f156" }, { "text": "fe80:0::0:204:61ff:fe9d:f156" }], "answer": "fe80::204:61ff:fe9d:f156", "topic": "IPv6表記 (RFC 5952)"
+            },
+            {
+                "id": "p24", "type": "fill_in_the_blank", "question": "IPv6において、インターネット上で一意に識別されるアドレスで、IPv4のグローバルアドレスに相当するものを [ ] ユニキャストアドレスという。",
+                "keywords": ["グローバル", "GUA"], "topic": "IPv6"
+            },
+            {
+                "id": "p25", "type": "multiple_choice", "question": "IPv6でセキュリティ機能として標準で利用できるようになったプロトコルはどれか？",
+                "options": [{ "text": "SSL" }, { "text": "TLS" }, { "text": "IPsec" }, { "text": "PPPoE" }], "answer": "IPsec", "topic": "IPv6"
+            },
+            {
+                "id": "p26", "type": "multiple_choice", "question": "IPアドレス「192.168.3.121」とサブネットマスク「255.255.255.224」がある。この端末のホストアドレス（10進数）はどれか？",
+                "options": [{ "text": "9" }, { "text": "25" }, { "text": "121" }, { "text": "224" }], "answer": "25", "topic": "サブネットマスク（計算）"
+            },
+            {
+                "id": "p27", "type": "fill_in_the_blank", "question": "サブネットマスク「255.255.255.224」は、左から [ ] ビットがネットワークアドレス部であることを示している。",
+                "keywords": ["27", "27ビット"], "topic": "サブネットマスク（計算）"
+            },
+            {
+                "id": "p28", "type": "multiple_choice", "question": "IPv4アドレスにおいて、クラスを用いずにサブネットマスクでネットワーク部とホスト部を分割する方式を何と呼ぶか？",
+                "options": [{ "text": "クラスフル方式" }, { "text": "クラスレス方式" }, { "text": "マルチキャスト方式" }, { "text": "ブロードキャスト方式" }], "answer": "クラスレス方式", "topic": "クラスフルとクラスレス"
+            },
+            {
+                "id": "p29", "type": "multiple_choice", "question": "IPアドレス「192.0.2.1」は、どのIPv4アドレスクラスに分類されるか？ (第1オクテットの範囲に基づく)",
+                "options": [{ "text": "クラスA" }, { "text": "クラスB" }, { "text": "クラスC" }, { "text": "クラスD" }], "answer": "クラスC", "topic": "IPv4クラス"
+            },
+            {
+                "id": "p30", "type": "fill_in_the_blank", "question": "IPv6アドレスは、16ビットごとに区切られた [ ] つのセグメントで表現される。",
+                "keywords": ["8", "8つ", "八個"], "topic": "IPv6"
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('quiz-container');
+
+            quizData.forEach((q, index) => {
+                const questionIndex = index + 1;
+                const questionBlock = document.createElement('div');
+                questionBlock.className = 'question-block';
+
+                let questionHTML = '';
+                let answerHTML = '';
+
+                if (q.type === 'multiple_choice') {
+                    // 4択問題
+                    questionHTML = `
+                        <p class="question-text">${questionIndex}. ${q.question}</p>
+                        <div class="space-y-2">
+                            ${q.options.map(opt => `<div class="option">${opt.text}</div>`).join('')}
+                        </div>
+                    `;
+                    answerHTML = `
+                        <p><strong>正解:</strong> ${q.answer}</p>
+                    `;
+                } else {
+                    // 穴埋め問題
+                    const formattedQuestion = q.question.replace('[ ]', '<span class="fill-in-blank">[ ]</span>');
+                    questionHTML = `
+                        <p class="question-text">${questionIndex}. ${formattedQuestion}</p>
+                    `;
+                    answerHTML = `
+                        <p><strong>正解キーワード:</strong> ${q.keywords.join(', ')}</p>
+                    `;
+                }
+
+                // 解説
+                answerHTML += `<p class="mt-2 text-sm text-gray-600">（関連トピック: ${q.topic}）</p>`;
+
+                // ブロック全体を構築
+                questionBlock.innerHTML = `
+                    ${questionHTML}
+                    <button class="toggle-button mt-4">解答・解説を表示</button>
+                    <div class="answer-block hidden">
+                        ${answerHTML}
+                    </div>
+                `;
+
+                // イベントリスナーを追加
+                const button = questionBlock.querySelector('.toggle-button');
+                const answerDiv = questionBlock.querySelector('.answer-block');
+
+                button.addEventListener('click', () => {
+                    const isHidden = answerDiv.classList.toggle('hidden');
+                    button.textContent = isHidden ? '解答・解説を表示' : '解答・解説を隠す';
+                });
+
+                container.appendChild(questionBlock);
+            });
+        });
+    </script>
+
+</body>
+</html>

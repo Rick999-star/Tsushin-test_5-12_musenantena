@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>実力テスト 第2回 (20問) - IPアドレス学習</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f4f7f6;
+        }
+        .question-block {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 3px solid transparent; /* 採点時のハイライト用 */
+            transition: border-color 0.3s ease;
+        }
+        .question-text {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .fill-in-input {
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            width: 100%;
+            max-width: 300px;
+        }
+        .option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb; /* gray-200 */
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .option-label:hover {
+            background-color: #f9fafb; /* gray-50 */
+        }
+        .option-label input {
+            margin-right: 0.75rem;
+        }
+        .submit-button {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 2rem auto 0;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            text-align: center;
+            color: white;
+            background-color: #16a34a; /* green-600 */
+            box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .submit-button:hover {
+            background-color: #15803d; /* green-700 */
+        }
+        .submit-button:disabled {
+            background-color: #d1d5db; /* gray-300 */
+            cursor: not-allowed;
+        }
+        #score-container {
+            display: none;
+            text-align: center;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            border: 3px solid #3b82f6; /* blue-500 */
+        }
+        #score-text {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937; /* gray-800 */
+        }
+        .result-feedback {
+            display: none; /* 採点後に表示 */
+            background-color: #f9fafb; /* gray-50 */
+            border-left: 4px solid;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.25rem;
+        }
+        .result-feedback.correct {
+            border-color: #22c55e; /* green-500 */
+        }
+        .result-feedback.incorrect {
+            border-color: #ef4444; /* red-500 */
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div class="max-w-3xl mx-auto p-6 md:p-10">
+
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">実力テスト 第2回 (20問)</h1>
+            <p class="text-lg text-gray-600">全問回答したら「採点する」ボタンを押してください。</p>
+        </header>
+
+        <div id="score-container">
+            <p id="score-text">あなたのスコア: 0 / 20 点</p>
+        </div>
+
+        <main id="quiz-container">
+            <!-- 問題はJSによってここに挿入されます -->
+        </main>
+
+        <button id="submit-button" class="submit-button">採点する</button>
+
+        <footer class="mt-10 text-center">
+            <a href="index.html" class="text-blue-600 hover:underline font-medium">&larr; トップページに戻る</a>
+        </footer>
+
+    </div>
+
+    <script>
+        // 実力テスト 第2回 データ
+        const quizData = [
+            {
+                "id": "t2_01", "type": "multiple_choice", "question": "IPv6アドレスのビット数はいくつか？",
+                "options": [{ "text": "32ビット" }, { "text": "64ビット" }, { "text": "128ビット" }, { "text": "256ビット" }], "answer": "128ビット", "topic": "IPv6"
+            },
+            {
+                "id": "t2_02", "type": "fill_in_the_blank", "question": "IPv4アドレスは、合計 [ ] ビットで構成されている。",
+                "keywords": ["32", "32ビット"], "topic": "IPv4"
+            },
+            {
+                "id": "t2_03", "type": "multiple_choice", "question": "IPv4アドレスのクラスAのホストアドレス部のビット数はどれか？",
+                "options": [{ "text": "8ビット" }, { "text": "16ビット" }, { "text": "24ビット" }, { "text": "32ビット" }], "answer": "24ビット", "topic": "IPv4クラス"
+            },
+            {
+                "id": "t2_04", "type": "multiple_choice", "question": "実験用に使用されるIPv4アドレスのクラスはどれか？",
+                "options": [{ "text": "クラスA" }, { "text": "クラスC" }, { "text": "クラスD" }, { "text": "クラスE" }], "answer": "クラスE", "topic": "IPv4クラス"
+            },
+            {
+                "id": "t2_05", "type": "fill_in_the_blank", "question": "IPアドレス「192.168.1.1」が属する（クラスフルアドレッシングの場合）クラスは、クラス [ ] である。",
+                "keywords": ["C", "c", "シー"], "topic": "IPv4クラス"
+            },
+            {
+                "id": "t2_06", "type": "multiple_choice", "question": "IPv4アドレスのクラスBのホストアドレス部のビット数はどれか？",
+                "options": [{ "text": "8ビット" }, { "text": "16ビット" }, { "text": "24ビット" }, { "text": "32ビット" }], "answer": "16ビット", "topic": "IPv4クラス"
+            },
+            {
+                "id": "t2_07", "type": "multiple_choice", "question": "サブネットマスク「255.255.0.0」をCIDR表記（簡略表記）した場合、正しいものはどれか？",
+                "options": [{ "text": "/8" }, { "text": "/16" }, { "text": "/24" }, { "text": "/32" }], "answer": "/16", "topic": "サブネットマスク"
+            },
+            {
+                "id": "t2_08", "type": "fill_in_the_blank", "question": "IPv6のアドレス表記（RFC 5952）で、連続する「0」のフィールドを省略するために使われる記号は [ ] である。",
+                "keywords": ["::", "コロンコロン", "ダブルコロン"], "topic": "IPv6表記 (RFC 5952)"
+            },
+            {
+                "id": "t2_09", "type": "multiple_choice", "question": "IPv6ヘッダの長さはどれか？",
+                "options": [{ "text": "20バイト固定長" }, { "text": "40バイト固定長" }, { "text": "20バイト以上の可変長" }, { "text": "40バイト以上の可変長" }], "answer": "40バイト固定長", "topic": "IPv6ヘッダ"
+            },
+            {
+                "id": "t2_10", "type": "multiple_choice", "question": "IPv6アドレス「2001:db8:0:0:0:0:1:1」をRFC 5952に従って正しく省略したものはどれか？",
+                "options": [{ "text": "2001:db8:0:0::1:1" }, { "text": "2001:db8::0:0:1:1" }, { "text": "2001:db8::1:1" }, { "text": "2001:db8:0::1:1" }], "answer": "2001:db8::1:1", "topic": "IPv6表記 (RFC 5952)"
+            },
+            {
+                "id": "t2_11", "type": "fill_in_the_blank", "question": "IPアドレス「192.168.100.200」とサブネットマスク「255.255.255.192」がある。このネットワークのホストアドレス部は [ ] ビットである。",
+                "keywords": ["6", "6ビット"], "topic": "サブネットマスク（計算）"
+            },
+            {
+                "id": "t2_12", "type": "multiple_choice", "question": "（t2_11の問題の続き）ホストアドレス「200」（10進数）は、2進数で「11001000」である。ホストアドレス部（下位6ビット）の値「001000」を10進数に変換するといくつか？",
+                "options": [{ "text": "8" }, { "text": "16" }, { "text": "32" }, { "text": "200" }], "answer": "8", "topic": "サブネットマスク（計算）"
+            },
+            {
+                "id": "t2_13", "type": "multiple_choice", "question": "1対1の通信方式を何と呼ぶか？",
+                "options": [{ "text": "ユニキャスト" }, { "text": "マルチキャスト" }, { "text": "ブロードキャスト" }, { "text": "エニーキャスト" }], "answer": "ユニキャスト", "topic": "ユニキャストとマルチキャスト"
+            },
+            {
+                "id": "t2_14", "type": "multiple_choice", "question": "IPv6で利用可能な接続方式のうち、従来のIPv4で主流だったユーザー認証（IDとパスワード）が必要な方式はどれか？",
+                "options": [{ "text": "IPoE方式" }, { "text": "PPPoE方式" }, { "text": "IPsec方式" }, { "text": "GUA方式" }], "answer": "PPPoE方式", "topic": "IPv6 (PPPoE)"
+            },
+            {
+                "id": "t2_15", "type": "fill_in_the_blank", "question": "IPv4のアドレス枯渇問題を解決するために設計されたのが、IPv [ ] である。",
+                "keywords": ["6", "v6", "６"], "topic": "IPv6"
+            },
+            {
+                "id": "t2_16", "type": "multiple_choice", "question": "IPv4アドレスのクラスCの先頭ビット列はどれか？",
+                "options": [{ "text": "0" }, { "text": "10" }, { "text": "110" }, { "text": "1110" }], "answer": "110", "topic": "IPv4クラス"
+            },
+            {
+                "id": "t2_17", "type": "multiple_choice", "question": "RFC 5952のIPv6アドレス表記ルールとして、適当でないものはどれか？",
+                "options": [{ "text": "フィールド内の先頭の「0」は省略する。" }, { "text": "「0000」が1つだけの場合は「::」で省略する。" }, { "text": "連続する「0」のフィールドは「::」で省略できる。" }, { "text": "「::」は1つのアドレス内で1回しか使えない。" }], "answer": "「0000」が1つだけの場合は「::」で省略する。", "topic": "IPv6表記 (RFC 5952)"
+            },
+            {
+                "id": "t2_18", "type": "fill_in_the_blank", "question": "IPアドレス「10.1.2.3」が属する（クラスフルアドレッシングの場合）クラスは、クラス [ ] である。",
+                "keywords": ["A", "a", "エー"], "topic": "IPv4クラス"
+            },
+            {
+                "id": "t2_19", "type": "multiple_choice", "question": "サブネットマスク「255.255.255.252」のネットワークでは、ホストアドレスとして何ビット利用可能か？",
+                "options": [{ "text": "2ビット" }, { "text": "4ビット" }, { "text": "6ビット" }, { "text": "8ビット" }], "answer": "2ビット", "topic": "サブネットマスク"
+            },
+            {
+                "id": "t2_20", "type": "multiple_choice", "question": "MACアドレスに関する記述として、正しいものはどれか？",
+                "options": [{ "text": "ネットワーク上の論理的なアドレスである。" }, { "text": "IPv4アドレスと同じ32ビット長である。" }, { "text": "ネットワークに接続する機器に割り当てられる物理的な識別番号である。" }, { "text": "ユーザーが自由に変更できる。" }], "answer": "ネットワークに接続する機器に割り当てられる物理的な識別番号である。", "topic": "MACアドレス"
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('quiz-container');
+            const submitButton = document.getElementById('submit-button');
+
+            // ほぼ test1.html と同じロジック
+            quizData.forEach((q, index) => {
+                const questionIndex = index + 1;
+                const questionBlock = document.createElement('div');
+                questionBlock.className = 'question-block';
+                questionBlock.id = `question-${index}`;
+
+                let contentHTML = '';
+
+                if (q.type === 'multiple_choice') {
+                    contentHTML = `
+                        <p class="question-text">${questionIndex}. ${q.question}</p>
+                        <div class="space-y-2">
+                            ${q.options.map((opt, optIndex) => `
+                                <label class="option-label">
+                                    <input type="radio" name="q${index}" value="${opt.text}">
+                                    ${opt.text}
+                                </label>
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    const inputId = `q${index}-input`;
+                    const formattedQuestion = q.question.replace('[ ]', 
+                        `<input type="text" id="${inputId}" class="fill-in-input" placeholder="答えを入力">`);
+                    contentHTML = `
+                        <p class="question-text">${questionIndex}. ${formattedQuestion}</p>
+                    `;
+                }
+
+                contentHTML += `<div class="result-feedback" id="feedback-${index}"></div>`;
+                questionBlock.innerHTML = contentHTML;
+                container.appendChild(questionBlock);
+            });
+
+            submitButton.addEventListener('click', () => {
+                let score = 0;
+                
+                quizData.forEach((q, index) => {
+                    const questionBlock = document.getElementById(`question-${index}`);
+                    const feedbackBlock = document.getElementById(`feedback-${index}`);
+                    let isCorrect = false;
+                    let correctAnswerText = '';
+
+                    if (q.type === 'multiple_choice') {
+                        const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                        if (selectedOption && selectedOption.value === q.answer) {
+                            isCorrect = true;
+                        }
+                        correctAnswerText = `正解: ${q.answer}`;
+                    } else {
+                        const userInput = document.getElementById(`q${index}-input`).value.trim().toLowerCase();
+                        if (userInput) {
+                            isCorrect = q.keywords.some(keyword => userInput.includes(keyword.toLowerCase()));
+                        }
+                        correctAnswerText = `正解キーワード: ${q.keywords.join(', ')}`;
+                    }
+
+                    if (isCorrect) {
+                        score++;
+                        questionBlock.style.borderColor = '#22c55e'; // green-500
+                        feedbackBlock.classList.add('correct');
+                        feedbackBlock.innerHTML = `<p class="font-bold">正解！</p><p>${correctAnswerText}</p>`;
+                    } else {
+                        questionBlock.style.borderColor = '#ef4444'; // red-500
+                        feedbackBlock.classList.add('incorrect');
+                        feedbackBlock.innerHTML = `<p class="font-bold">不正解</p><p>${correctAnswerText}</p>`;
+                    }
+                    feedbackBlock.style.display = 'block';
+                });
+
+                const scoreContainer = document.getElementById('score-container');
+                const scoreText = document.getElementById('score-text');
+                scoreText.textContent = `あなたのスコア: ${score} / ${quizData.length} 点`;
+                scoreContainer.style.display = 'block';
+
+                submitButton.disabled = true;
+                submitButton.textContent = '採点済み';
+                window.scrollTo(0, 0);
+            });
+        });
+    </script>
+
+</body>
+</html>
