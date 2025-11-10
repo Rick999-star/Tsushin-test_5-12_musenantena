@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>無線アンテナ 学習サイト - 実力テスト 第2回</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .question-container {
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease-in-out;
+        }
+        .correct-border {
+            border-color: #22c55e; /* green-500 */
+            background-color: #f0fdf4; /* green-50 */
+        }
+        .incorrect-border {
+            border-color: #ef4444; /* red-500 */
+            background-color: #fef2f2; /* red-50 */
+        }
+        .answer-feedback {
+            display: none;
+            padding: 0.75rem;
+            margin-top: 0.75rem;
+            border-radius: 0.375rem;
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        .correct-answer-text {
+             font-weight: 700;
+             color: #16a34a; /* green-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen text-gray-800">
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-700">5-12 無線アンテナ 学習サイト</h1>
+            <h2 class="text-2xl md:text-3xl font-semibold text-gray-700 mt-2">実力テスト 第2回 (20問)</h2>
+        </header>
+        
+        <main id="content-main">
+            <!-- スコア表示領域 -->
+            <div id="score-container" class="text-center mb-6" style="display: none;">
+                <!-- スコアはここに挿入されます -->
+            </div>
+
+            <!-- 問題表示領域 -->
+            <div id="quiz-container" class="space-y-6">
+                <!-- 実力テスト問題はここに挿入されます -->
+            </div>
+
+            <!-- 採点ボタン -->
+            <button id="grade-button" class="w-full mt-10 bg-green-600 text-white font-bold text-lg py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-300 ease-in-out">
+                採点する
+            </button>
+        </main>
+
+        <footer class="text-center mt-12">
+            <a href="index.html" class="text-blue-600 hover:underline">&laquo; トップページに戻る</a>
+        </footer>
+    </div>
+    
+    <script>
+        // 実力テスト第2回データ
+        const testData = {
+          "assessment_test_2": [
+            {
+              "questionNumber": 1,
+              "type": "multiple_choice",
+              "question": "アンテナの基本的な役割は、電気エネルギーと何との間の変換か？",
+              "options": [
+                "運動エネルギー",
+                "熱エネルギー",
+                "電波（電磁波）",
+                "音波"
+              ],
+              "answer": "電波（電磁波）",
+              "hint": "無線通信の「無線」の部分を担う装置です。"
+            },
+            {
+              "questionNumber": 2,
+              "type": "fill_in_the_blank",
+              "question": "半波長ダイポールアンテナの「ダイポール」とは、「2つの（　　）」を持つという意味である。",
+              "keywords": ["極"],
+              "hint": "プラスとマイナス、あるいは2本の導体、というイメージです。"
+            },
+            {
+              "questionNumber": 3,
+              "type": "multiple_choice",
+              "question": "半波長ダイポールアンテナの絶対利得として最も近い値はどれか？",
+              "options": [
+                "0 dBi",
+                "2.15 dBi",
+                "10 dBi",
+                "40 dBi"
+              ],
+              "answer": "2.15 dBi",
+              "hint": "基準である等方性アンテナ(0dBi)よりは少し利得があります。"
+            },
+            {
+              "questionNumber": 4,
+              "type": "multiple_choice",
+              "question": "八木アンテナにおいて、導波器が持つインピーダンスの特性は何か？",
+              "options": [
+                "誘導性",
+                "容量性",
+                "抵抗性",
+                "無抵抗"
+              ],
+              "answer": "容量性",
+              "hint": "反射器は「誘導性」、導波器はその反対です。"
+            },
+            {
+              "questionNumber": 5,
+              "type": "fill_in_the_blank",
+              "question": "周波数 $f$ と波長 $\\lambda$ の関係は $f \\times \\lambda = 300$ [m, MHz] で表される。これは電波の速さが光速（秒速約（　　）万km）であることに由来する。",
+              "keywords": ["30"],
+              "hint": " $3 \\times 10^8$ m/s を MHz と m の単位で換算したものです。"
+            },
+            {
+              "questionNumber": 6,
+              "type": "multiple_choice",
+              "question": "ブラウンアンテナの別名として正しいものはどれか？",
+              "options": [
+                "グランドプレーンアンテナ",
+                "コーナレフレクタアンテナ",
+                "ホイップアンテナ",
+                "カセグレンアンテナ"
+              ],
+              "answer": "グランドプレーンアンテナ",
+              "hint": "地線（グランドプレーン）が特徴的なアンテナです。"
+            },
+            {
+              "questionNumber": 7,
+              "type": "multiple_choice",
+              "question": "コーナレフレクタアンテナに関する記述のうち、正しいものはどれか？",
+              "options": [
+                "無指向性のアンテナである。",
+                "反射板の開き角を変えても、特性は変わらない。",
+                "半波長ダイポールアンテナと反射鏡で構成される。",
+                "パラボラアンテナの一次放射器として使われる。"
+              ],
+              "answer": "半波長ダイポールアンテナと反射鏡で構成される。",
+              "hint": "名前の「レフレクタ（反射鏡）」がヒントです。"
+            },
+            {
+              "questionNumber": 8,
+              "type": "fill_in_the_blank",
+              "question": "パラボラアンテナは、放物面をもつ（　　）と、その焦点に置かれる一次放射器から構成される。",
+              "keywords": ["反射器", "反射鏡"],
+              "hint": "電波を反射させる「お皿」の部分です。"
+            },
+            {
+              "questionNumber": 9,
+              "type": "multiple_choice",
+              "question": "パラボラアンテナなどで、電波を特定の方向に集中させる性能（ビームの鋭さ）が低下し、意図しない方向に電波が漏れる現象を何というか？",
+              "options": [
+                "サイドローブの上昇",
+                "利得の上昇",
+                "半値角の減少",
+                "インピーダンスの整合"
+              ],
+              "answer": "サイドローブの上昇",
+              "hint": "鏡面が歪んだり、ブロッキングがあったりすると発生します。"
+            },
+            {
+              "questionNumber": 10,
+              "type": "fill_in_the_blank",
+              "question": "カセグレンアンテナが副反射鏡に回転「双曲面」を用いるのに対し、（　　）アンテナは回転「楕円面」を用いる。",
+              "keywords": ["グレゴリアン"],
+              "hint": "カセグレンと対になるアンテナ形式です。"
+            },
+            {
+              "questionNumber": 11,
+              "type": "multiple_choice",
+              "question": "周波数600MHzの半波長ダイポールアンテナの物理的な長さ [m] はいくらか？（ $f \\times \\lambda = 300$ [m, MHz] とする）",
+              "options": [
+                "0.5 m",
+                "0.25 m",
+                "1.0 m",
+                "2.0 m"
+              ],
+              "answer": "0.25 m",
+              "hint": "まず波長 $\\lambda$ を計算し（ $\\lambda = 300 / 600 = 0.5$ m）、アンテナの長さはその「半分」です。"
+            },
+            {
+              "questionNumber": 12,
+              "type": "fill_in_the_blank",
+              "question": "八木アンテナにおいて、放射器の後方に配置され、電波を前方に反射させる役割を持つ要素は（　　）である。",
+              "keywords": ["反射器"],
+              "hint": "放射器よりも長い素子です。"
+            },
+            {
+              "questionNumber": 13,
+              "type": "multiple_choice",
+              "question": "自動車のラジオアンテナなどによく使われる、棒状のアンテナの一般的な名称は何か？",
+              "options": [
+                "ホイップアンテナ",
+                "パラボラアンテナ",
+                "八木アンテナ",
+                "ホーンアンテナ"
+              ],
+              "answer": "ホイップアンテナ",
+              "hint": "1/4波長で動作するものが多く、ブラウンアンテナの仲間です。"
+            },
+            {
+              "questionNumber": 14,
+              "type": "multiple_choice",
+              "question": "電磁ホーンアンテナから放射される電波の波面は、一般的にどのような形状か？",
+              "options": [
+                "平面波",
+                "球面波",
+                "円筒波",
+                "不規則な波"
+              ],
+              "answer": "球面波",
+              "hint": "メガホンのように広がっていくため、波面は丸くなります。"
+            },
+            {
+              "questionNumber": 15,
+              "type": "fill_in_the_blank",
+              "question": "ブラウンアンテナやホイップアンテナの指向性は（　　）指向性である。",
+              "keywords": ["無指向性"],
+              "hint": "水平面内のどの方向にも同じ強さで電波を送受信します。"
+            },
+            {
+              "questionNumber": 16,
+              "type": "multiple_choice",
+              "question": "アンテナの利得や指向性を評価する際、電力が最大値の半分になる角度を何というか？",
+              "options": [
+                "利得角",
+                "放射角",
+                "インピーダンス角",
+                "半値角"
+              ],
+              "answer": "半値角",
+              "hint": "ビームの鋭さを示します。"
+            },
+            {
+              "questionNumber": 17,
+              "type": "fill_in_the_blank",
+              "question": "アンテナの送信特性と受信特性が同じであるという原理を（　　）の原理という。",
+              "keywords": ["可逆性", "相反性"],
+              "hint": "「元に戻れる」という意味の言葉です。"
+            },
+            {
+              "questionNumber": 18,
+              "type": "multiple_choice",
+              "question": "パラボラアンテナの一次放射器や支持柱が電波の通路をふさぐ現象（ブロッキング）を避けるために設計されたアンテナは何か？",
+              "options": [
+                "カセグレンアンテナ",
+                "オフセットパラボラアンテナ",
+                "八木アンテナ",
+                "コーナレフレクタアンテナ"
+              ],
+              "answer": "オフセットパラボラアンテナ",
+              "hint": "反射鏡の「中心をずらした（オフセット）」構造です。"
+            },
+            {
+              "questionNumber": 19,
+              "type": "multiple_choice",
+              "question": "八木アンテナの指向性を決定づける3つの要素は、放射器、反射器と、あと一つは何か？",
+              "options": [
+                "増幅器",
+                "導波器",
+                "同軸ケーブル",
+                "地線"
+              ],
+              "answer": "導波器",
+              "hint": "電波を導くものです。"
+            },
+            {
+              "questionNumber": 20,
+              "type": "fill_in_the_blank",
+              "question": "半波長ダイポールアンテナの絶対利得の基準（0dBi）となる、全方向に均等に電波を放射する理論上のアンテナを（　　）放射体という。",
+              "keywords": ["等方性"],
+              "hint": "「i」は Isotropic の頭文字です。"
+            }
+          ]
+        };
+
+        const questions = testData.assessment_test_2 || [];
+
+        // 数式レンダリング関数
+        function renderLatex(text) {
+            if (typeof text !== 'string') return text;
+            return text.replace(/\$([^$]+?)\$/g, (match, p1) => p1) // $...$ の $ を削除
+                       .replace(/\\lambda/g, 'λ') // \lambda を λ に
+                       .replace(/\\pi/g, 'π')    // \pi を π に
+                       .replace(/\\times/g, '×'); // \times を × に
+        }
+
+        // ページ読み込み時に問題を描画
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('quiz-container');
+            if (!container) return;
+
+            questions.forEach((q, index) => {
+                const qIndex = index + 1;
+                let contentHtml = '';
+                
+                // LATEX表記をレンダリング（簡易版）
+                const questionText = renderLatex(q.question);
+
+                if (q.type === 'multiple_choice') {
+                    // 4択問題のHTML
+                    const optionsHtml = q.options.map(option => `
+                        <label class="flex items-center p-3 rounded-md border border-gray-300 hover:bg-gray-50 cursor-pointer">
+                            <input type="radio" name="q${qIndex}" value="${option}" class="mr-3">
+                            <span>${renderLatex(option)}</span>
+                        </label>
+                    `).join('');
+                    contentHtml = `<div class="space-y-2">${optionsHtml}</div>`;
+                } else if (q.type === 'fill_in_the_blank') {
+                    // 穴埋め問題のHTML
+                    contentHtml = `
+                        <div class="space-y-2">
+                             <input type="text" id="q${qIndex}-input" placeholder="答えを入力" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    `;
+                }
+
+                // 問題全体のHTML
+                const questionHtml = `
+                    <div class="bg-white p-4 md:p-6 rounded-lg shadow-md question-container" id="question-${qIndex}">
+                        <p class="text-lg font-semibold mb-4">Q${q.questionNumber}: ${questionText}</p>
+                        ${contentHtml}
+                        <div id="feedback-${qIndex}" class="answer-feedback">
+                            <!-- 解答フィードバックはここに挿入されます -->
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += questionHtml;
+            });
+
+            // 採点ボタンのイベントリスナーを設定
+            document.getElementById('grade-button').addEventListener('click', gradeTest);
+        });
+
+        // 採点機能
+        function gradeTest(event) {
+            let score = 0;
+            
+            questions.forEach((q, index) => {
+                const qIndex = index + 1;
+                const qDiv = document.getElementById(`question-${qIndex}`);
+                const fDiv = document.getElementById(`feedback-${qIndex}`);
+                let isCorrect = false;
+                let correctAnswerHtml = '';
+
+                // クラスをリセット
+                qDiv.classList.remove('correct-border', 'incorrect-border');
+
+                if (q.type === 'multiple_choice') {
+                    const selected = document.querySelector(`input[name="q${qIndex}"]:checked`);
+                    if (selected && selected.value === q.answer) {
+                        isCorrect = true;
+                    }
+                    correctAnswerHtml = `<p><strong>正解: </strong><span class="correct-answer-text">${renderLatex(q.answer)}</span></p>`;
+                } else if (q.type === 'fill_in_the_blank') {
+                    const input = document.getElementById(`q${qIndex}-input`);
+                    const userAnswer = input.value.trim();
+                    const keywords = q.keywords;
+                    
+                    if (userAnswer) {
+                        for (const keyword of keywords) {
+                            // ユーザーの回答がキーワードのいずれかを含んでいれば正解
+                            if (userAnswer.includes(keyword)) {
+                                isCorrect = true;
+                                break;
+                            }
+                        }
+                    }
+                    correctAnswerHtml = `<p><strong>正解 (キーワード): </strong><span class="correct-answer-text">${q.keywords.map(renderLatex).join('、')}</span></p>`;
+                }
+
+                // UIを更新
+                if (isCorrect) {
+                    score++;
+                    qDiv.classList.add('correct-border');
+                } else {
+                    qDiv.classList.add('incorrect-border');
+                }
+                
+                fDiv.innerHTML = correctAnswerHtml;
+                fDiv.style.display = 'block';
+            });
+
+            // 総合スコアを表示
+            const scoreContainer = document.getElementById('score-container');
+            scoreContainer.innerHTML = `<h2 class="text-3xl font-bold text-gray-800">あなたのスコア: <span class="${score > (questions.length / 2) ? 'text-green-600' : 'text-red-600'}">${score} / ${questions.length} 点</span></h2>`;
+            scoreContainer.style.display = 'block';
+
+            // 採点ボタンを無効化
+            const gradeButton = event.target;
+            gradeButton.disabled = true;
+            gradeButton.textContent = '採点済み';
+            gradeButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+            gradeButton.classList.remove('bg-green-600', 'hover:bg-green-700');
+
+            // ページ上部にスクロール
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

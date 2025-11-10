@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>無線アンテナ 学習サイト - 練習問題</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .answer-feedback {
+            display: none;
+            padding: 0.75rem;
+            margin-top: 0.75rem;
+            border-radius: 0.375rem;
+            background-color: #f3f4f6; /* gray-100 */
+        }
+        .correct-answer-text {
+             font-weight: 700;
+             color: #16a34a; /* green-600 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen text-gray-800">
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-700">5-12 無線アンテナ 学習サイト</h1>
+            <h2 class="text-2xl md:text-3xl font-semibold text-gray-700 mt-2">練習問題 (30問)</h2>
+        </header>
+        
+        <main id="content-main">
+            <div id="quiz-container" class="space-y-6">
+                <!-- 練習問題はここに挿入されます -->
+            </div>
+        </main>
+
+        <footer class="text-center mt-12">
+            <a href="index.html" class="text-blue-600 hover:underline">&laquo; トップページに戻る</a>
+        </footer>
+    </div>
+    
+    <script>
+        // 練習問題データ
+        const practiceData = {
+          "practice_questions": [
+            {
+              "questionNumber": 1,
+              "type": "multiple_choice",
+              "question": "アンテナの主な役割として、最も適切なものはどれか？",
+              "options": [
+                "電波の周波数を変更すること",
+                "電気エネルギーを電波として放出、または電波を電気エネルギーとして受け取ること",
+                "電波の速度を上げること",
+                "電気信号を増幅すること"
+              ],
+              "answer": "電気エネルギーを電波として放出、または電波を電気エネルギーとして受け取ること",
+              "hint": "アンテナは、電気信号と空間を伝わる電波との「変換器」です。"
+            },
+            {
+              "questionNumber": 2,
+              "type": "fill_in_the_blank",
+              "question": "アンテナのサイズは、使用する電波の（　　）に依存する。",
+              "keywords": ["周波数", "波長"],
+              "hint": "電波の基本的な性質の一つです。これが決まるとアンテナの長さが決まります。"
+            },
+            {
+              "questionNumber": 3,
+              "type": "multiple_choice",
+              "question": "半波長ダイポールアンテナの「半波長」とは、何が電波の波長の半分であることを意味するか？",
+              "options": [
+                "アンテナの素子の直径",
+                "アンテナの給電点の電圧",
+                "アンテナ全体の長さ",
+                "アンテナの利得"
+              ],
+              "answer": "アンテナ全体の長さ",
+              "hint": "名前がそのままアンテナの物理的な特徴を示しています。"
+            },
+            {
+              "questionNumber": 4,
+              "type": "fill_in_the_blank",
+              "question": "半波長ダイポールアンテナの理論上の放射抵抗は、約（　　）Ωである。",
+              "keywords": ["73", "73Ω", "73オーム"],
+              "hint": "一般的な同軸ケーブルのインピーダンス（50Ωや75Ω）に近い値です。"
+            },
+            {
+              "questionNumber": 5,
+              "type": "multiple_choice",
+              "question": "アンテナ素子を水平に設置した半波長ダイポールアンテナの、水平面内指向性として正しい形状はどれか？",
+              "options": [
+                "円形（無指向性）",
+                "8の字特性",
+                "単一指向性（一方向のみ）",
+                "4つの葉のような形（クローバー形）"
+              ],
+              "answer": "8の字特性",
+              "hint": "アンテナ素子の直角方向に最も強く電波が放射されます。"
+            },
+            {
+              "questionNumber": 6,
+              "type": "multiple_choice",
+              "question": "アンテナの「絶対利得」を比較する際の基準となる、全ての方向に均等に電波を放射する理論上のアンテナは何か？",
+              "options": [
+                "八木・宇田アンテナ",
+                "等方性放射体（アイソトロピックアンテナ）",
+                "半波長ダイポールアンテナ",
+                "パラボラアンテナ"
+              ],
+              "answer": "等方性放射体（アイソトロピックアンテナ）",
+              "hint": "絶対利得の単位「dBi」の「i」がヒントです。"
+            },
+            {
+              "questionNumber": 7,
+              "type": "fill_in_the_blank",
+              "question": "半波長ダイポールアンテナの絶対利得は、約（　　）dBiである。",
+              "keywords": ["2.15", "2.15dBi"],
+              "hint": "等方性アンテナを基準(0dBi)としたときの利得です。"
+            },
+            {
+              "questionNumber": 8,
+              "type": "multiple_choice",
+              "question": "周波数 $f$ [MHz] と波長 $\\lambda$ [m] の関係式 $f \\times \\lambda = ?$ として正しいものはどれか？",
+              "options": [
+                "100",
+                "300",
+                "150",
+                "1000"
+              ],
+              "answer": "300",
+              "hint": "「掛けて300エムエム」と覚える方法があります。"
+            },
+            {
+              "questionNumber": 9,
+              "type": "fill_in_the_blank",
+              "question": "アンテナ全体の長さが一様に電波を放射/吸収しているわけではなく、「比較的密に仕事をしている部分の長さ」を（　　）長という。",
+              "keywords": ["実効長"],
+              "hint": "アンテナの効率を示す指標の一つです。"
+            },
+            {
+              "questionNumber": 10,
+              "type": "multiple_choice",
+              "question": "八木・宇田アンテナを構成する3つの基本要素に含まれないものはどれか？",
+              "options": [
+                "放射器",
+                "反射器",
+                "導波器",
+                "給電線"
+              ],
+              "answer": "給電線",
+              "hint": "給電線はアンテナに電力を供給するものですが、アンテナの「指向性」を構成する基本要素（エレメント）ではありません。"
+            },
+            {
+              "questionNumber": 11,
+              "type": "fill_in_the_blank",
+              "question": "八木アンテナにおいて、放射器より少し長く、誘導性のインピーダンスとして働く要素は（　　）である。",
+              "keywords": ["反射器"],
+              "hint": "電波を後ろに反射させる役割を持ちます。"
+            },
+            {
+              "questionNumber": 12,
+              "type": "multiple_choice",
+              "question": "八木アンテナにおいて、導波器の数を増やすとアンテナの利得はどうなるか？",
+              "options": [
+                "利得は高くなる",
+                "利得は低くなる",
+                "利得は変わらない",
+                "利得は不安定になる"
+              ],
+              "answer": "利得は高くなる",
+              "hint": "導波器は電波を前方に導く役割があります。"
+            },
+            {
+              "questionNumber": 13,
+              "type": "multiple_choice",
+              "question": "ブラウンアンテナ（グランドプレーンアンテナ）の放射素子の長さとして適切なものはどれか？（ $\\lambda$ を波長とする）",
+              "options": [
+                "1/2 $\\lambda$",
+                "1/4 $\\lambda$",
+                "1 $\\lambda$",
+                "1/8 $\\lambda$"
+              ],
+              "answer": "1/4 $\\lambda$",
+              "hint": "半波長ダイポールアンテナの片側を接地したホイップアンテナと似た構造です。"
+            },
+            {
+              "questionNumber": 14,
+              "type": "fill_in_the_blank",
+              "question": "ブラウンアンテナやホイップアンテナのように、すべての水平方向に均等に電波を放射する特性を（　　）指向性という。",
+              "keywords": ["無指向性"],
+              "hint": "特定の方向を持たない特性です。"
+            },
+            {
+              "questionNumber": 15,
+              "type": "multiple_choice",
+              "question": "コーナレフレクタアンテナに関する記述のうち、誤っているものはどれか？",
+              "options": [
+                "半波長ダイポールアンテナと反射鏡で構成される。",
+                "反射板の開き角が変わると、利得と指向性が変わる。",
+                "反射板の開き角が90度の場合、S = $\\lambda$ 程度のときに最も理想的なビームとなる。",
+                "半波長ダイポールアンテナ単体に比べ、利得が大きい。"
+              ],
+              "answer": "反射板の開き角が90度の場合、S = $\\lambda$ 程度のときに最も理想的なビームとなる。",
+              "hint": "理想的なビーム（単一指向性）となる距離Sは、波長 $\\lambda$ よりも短いはずです。（正しくは $S = \\lambda / 2$）"
+            },
+            {
+              "questionNumber": 16,
+              "type": "fill_in_the_blank",
+              "question": "アンテナの指向特性において、最も強く電波が出る方向（主ローブ）以外に漏れ出てしまう、意図しない弱い電波のことを（　　）と呼ぶ。",
+              "keywords": ["サイドローブ", "副放射ビーム"],
+              "hint": "メインビームの「横（サイド）」に出るものです。"
+            },
+            {
+              "questionNumber": 17,
+              "type": "multiple_choice",
+              "question": "電磁ホーンアンテナに関する記述のうち、正しいものはどれか？",
+              "options": [
+                "ホーンの開き角を大きくとるほど、放射される電磁波は平面波に近づく。",
+                "パラボラアンテナなどの反射鏡アンテナの一次放射器としても用いられる。",
+                "インピーダンス特性は、広帯域にわたって良好である。",
+                "利得測定時の標準アンテナとしては用いられない。"
+              ],
+              "answer": "パラボラアンテナなどの反射鏡アンテナの一次放射器としても用いられる。",
+              "hint": "ホーンアンテナは、電波を効率的に反射鏡に当てるのに適しています。"
+            },
+            {
+              "questionNumber": 18,
+              "type": "fill_in_the_blank",
+              "question": "電磁ホーンアンテナの開き角を大きくしすぎると、放射される電磁波は（　　）波に近づき、拡散しやすくなる。",
+              "keywords": ["球面波"],
+              "hint": "平面波の対極にある波形です。"
+            },
+            {
+              "questionNumber": 19,
+              "type": "multiple_choice",
+              "question": "パラボラアンテナの基本的な構成として正しいものはどれか？",
+              "options": [
+                "放物面をもつ反射器と一次放射器",
+                "導波器、放射器、反射器",
+                "V型の反射器と放射器",
+                "複数のアンテナ素子を並べたもの"
+              ],
+              "answer": "放物面をもつ反射器と一次放射器",
+              "hint": "パラボラ（放物線）の形状が特徴です。"
+            },
+            {
+              "questionNumber": 20,
+              "type": "fill_in_the_blank",
+              "question": "パラボラアンテナにおいて、一次放射器やその支持柱が反射した電波の通り道を邪魔してしまう現象を（　　）と呼ぶ。",
+              "keywords": ["ブロッキング"],
+              "hint": "これがサイドローブの発生原因の一つになります。"
+            },
+            {
+              "questionNumber": 21,
+              "type": "multiple_choice",
+              "question": "アンテナの「可逆性（相反性）」の原理とは、どのような特性を説明したものか？",
+              "options": [
+                "周波数が高くなると利得も高くなる特性",
+                "アンテナの送信指向性と受信指向性は等しいという特性",
+                "アンテナは送信専用と受信専用で分けるべきという特性",
+                "電界と磁界の関係性"
+              ],
+              "answer": "アンテナの送信指向性と受信指向性は等しいという特性",
+              "hint": "送信でも受信でも、アンテナの性能は同じであるという原理です。"
+            },
+            {
+              "questionNumber": 22,
+              "type": "multiple_choice",
+              "question": "アンテナの「半値角（半値幅）」とは、何が最大値の半分 ( -3dB ) に低下する2点間の角度を指すか？",
+              "options": [
+                "電圧",
+                "電流",
+                "電力",
+                "インピーダンス"
+              ],
+              "answer": "電力",
+              "hint": "ビームの「幅（太さ）」を示す指標で、電力で定義されます。"
+            },
+            {
+              "questionNumber": 23,
+              "type": "fill_in_the_blank",
+              "question": "パラボラアンテナの鏡面の精度が劣化（歪みや汚れ）すると、利得が低下し、（　　）が上昇する原因となる。",
+              "keywords": ["サイドローブ"],
+              "hint": "意図しない方向への電波の漏れが増加します。"
+            },
+            {
+              "questionNumber": 24,
+              "type": "multiple_choice",
+              "question": "BS放送の受信用アンテナなどでよく見られる、一次放射器が電波の通路を遮らないように、反射鏡の一部（中心からずれた部分）だけを使ったパラボラアンテナの名称は何か？",
+              "options": [
+                "カセグレンアンテナ",
+                "オフセットパラボラアンテナ",
+                "コーナレフレクタアンテナ",
+                "グレゴリアンアンテナ"
+              ],
+              "answer": "オフセットパラボラアンテナ",
+              "hint": "ブロッキングを避けるための構造です。"
+            },
+            {
+              "questionNumber": 25,
+              "type": "multiple_choice",
+              "question": "主反射鏡（回転放物面）と、回転「双曲面」の副反射鏡を組み合わせたパラボラアンテナの名称は何か？",
+              "options": [
+                "カセグレンアンテナ",
+                "グレゴリアンアンテナ",
+                "オフセットパラボラアンテナ",
+                "ブラウンアンテナ"
+              ],
+              "answer": "カセグレンアンテナ",
+              "hint": "大地雑音の低減などを目的としています。副反射鏡の形状がポイントです。"
+            },
+            {
+              "questionNumber": 26,
+              "type": "fill_in_the_blank",
+              "question": "カセグレンアンテナに対し、副反射鏡として回転「楕円面」を用いたアンテナを（　　）アンテナという。",
+              "keywords": ["グレゴリアン"],
+              "hint": "カセグレンアンテナと対比されるアンテナ形式です。"
+            },
+            {
+              "questionNumber": 27,
+              "type": "fill_in_the_blank",
+              "question": "八木アンテナにおいて、放射器より少し短く、容量性のインピーダンスとして働く要素は（　　）である。",
+              "keywords": ["導波器"],
+              "hint": "電波を前方に導く（指向性を鋭くする）役割を持ちます。"
+            },
+            {
+              "questionNumber": 28,
+              "type": "multiple_choice",
+              "question": "周波数400MHzの電波の波長 $\\lambda$ [m] はいくらか？（ $f \\times \\lambda = 300$ [m, MHz] とする）",
+              "options": [
+                "0.75 m",
+                "1.33 m",
+                "1.0 m",
+                "0.5 m"
+              ],
+              "answer": "0.75 m",
+              "hint": "$\\lambda = 300 / f$ の式に $f=400$ を代入して計算します。"
+            },
+            {
+              "questionNumber": 29,
+              "type": "multiple_choice",
+              "question": "半波長ダイポールアンテナの実効長 $l$ を求める式として正しいものはどれか？（ $\\lambda$ を波長とする）",
+              "options": [
+                "$\\lambda / \\pi$",
+                "$\\lambda / 2$",
+                "$\\lambda / 4$",
+                "$\\lambda / 2\\pi$"
+              ],
+              "answer": "$\\lambda / \\pi$",
+              "hint": "実効長は、物理的な長さ（ $\\lambda / 2$ ）とは異なる、アンテナの効率を示す長さです。"
+            },
+            {
+              "questionNumber": 30,
+              "type": "fill_in_the_blank",
+              "question": "自動車やラジオなどに使われる、半波長ダイポールアンテナの片側を接地した構造のアンテナを（　　）アンテナという。",
+              "keywords": ["ホイップアンテナ"],
+              "hint": "棒状のアンテナです。"
+            }
+          ]
+        };
+
+        // 数式レンダリング関数
+        function renderLatex(text) {
+            if (typeof text !== 'string') return text;
+            return text.replace(/\$([^$]+?)\$/g, (match, p1) => p1) // $...$ の $ を削除
+                       .replace(/\\lambda/g, 'λ') // \lambda を λ に
+                       .replace(/\\pi/g, 'π')    // \pi を π に
+                       .replace(/\\times/g, '×'); // \times を × に
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('quiz-container');
+            if (!container) return;
+
+            const questions = practiceData.practice_questions || [];
+
+            questions.forEach((q, index) => {
+                const qIndex = index + 1;
+                let contentHtml = '';
+                let answerHtml = '';
+
+                if (q.type === 'multiple_choice') {
+                    // 4択問題のHTML
+                    const optionsHtml = q.options.map(option => `
+                        <label class="flex items-center p-3 rounded-md border border-gray-300 bg-gray-50 cursor-not-allowed opacity-75">
+                            <input type="radio" name="q${qIndex}" value="${option}" class="mr-3" disabled>
+                            <span>${renderLatex(option)}</span>
+                        </label>
+                    `).join('');
+                    contentHtml = `<div class="space-y-2">${optionsHtml}</div>`;
+                    answerHtml = `<p><strong>正解: </strong><span class="correct-answer-text">${renderLatex(q.answer)}</span></p>`;
+                } else if (q.type === 'fill_in_the_blank') {
+                    // 穴埋め問題のHTML
+                    contentHtml = `
+                        <div class="space-y-2">
+                             <input type="text" placeholder="答えを入力" class="w-full p-3 border border-gray-300 rounded-md bg-gray-50 cursor-not-allowed" readonly>
+                        </div>
+                    `;
+                    answerHtml = `<p><strong>正解 (キーワード): </strong><span class="correct-answer-text">${q.keywords.map(renderLatex).join('、')}</span></p>`;
+                }
+                
+                // LATEX表記をレンダリング（簡易版）
+                const questionText = renderLatex(q.question);
+
+                // 問題全体のHTML
+                const questionHtml = `
+                    <div class="bg-white p-4 md:p-6 rounded-lg shadow-md" id="question-${qIndex}">
+                        <p class="text-lg font-semibold mb-4">Q${q.questionNumber}: ${questionText}</p>
+                        ${contentHtml}
+                        <button class="toggle-answer mt-4 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-200" data-target="solution-${qIndex}">
+                            解答・解説を表示
+                        </button>
+                        <div id="solution-${qIndex}" class="answer-feedback">
+                            ${answerHtml}
+                            <p class="mt-2"><strong>ヒント: </strong>${renderLatex(q.hint)}</p>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += questionHtml;
+            });
+
+            // 解答・解説ボタンのイベントリスナーを設定
+            container.addEventListener('click', (e) => {
+                if (e.target.classList.contains('toggle-answer')) {
+                    const button = e.target;
+                    const targetId = button.dataset.target;
+                    const solutionDiv = document.getElementById(targetId);
+
+                    if (solutionDiv.style.display === 'none' || solutionDiv.style.display === '') {
+                        solutionDiv.style.display = 'block';
+                        button.textContent = '解答・解説を隠す';
+                    } else {
+                        solutionDiv.style.display = 'none';
+                        button.textContent = '解答・解説を表示';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
